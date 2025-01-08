@@ -165,7 +165,7 @@ Look for issues labeled `good-first-issue` if you're new to the project. These a
 - #help: Get help with technical issues
 - #development: Discuss ongoing development
 - #ideas: Share and discuss feature ideas
-- #pull-requests: PR discussions and reviews
+- #pull-requests: Pull request discussions and reviews
 
 ## Recognition
 
