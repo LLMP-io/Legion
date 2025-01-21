@@ -71,11 +71,6 @@ async def test_basic_completion(provider):
         model=MODEL,
         temperature=0
     )
-    response2 = provider.client.chat(
-        model=MODEL,
-        messages=provider._format_messages(messages),
-        options={"temperature": 0},
-        )
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
     assert len(response.content) > 0
