@@ -285,7 +285,58 @@ class OllamaProvider(LLMInterface):
         except Exception as e:
             raise ProviderError(f"Ollama async completion failed: {str(e)}")
     
-    def _aget_json_completion(self, messages, model, schema, temperature, max_tokens = None):
+    async def _aget_json_completion(
+            self,
+            messages,
+            model,
+            schema,
+            temperature,
+            max_tokens = None,
+            preserve_tool_calls: Optional[List[Dict[str, Any]]] = None
+        ):
+        """Get a chat completion formatted as JSON asynchronously"""
+        try:
+            await self._ensure_async_client()
+
+            # Get generic JSON formatting prompt
+            formatting_prompt = self._get_json_formatting_prompt(schema, messages[-1].content)
+
+            # Create messages for Ollama
+            messages = [
+                {"role": "system", "content": formatting_prompt}
+            ]
+
+            # Add remaining messages, skipping system
+            messages.extend([
+                # msg.model_dump() for msg in messages
+                msg for msg in messages
+                if msg['role'] != Role.SYSTEM
+            ])
+
+            response = await self._async_client.chat(
+                model=model,
+                messages=messages,
+                format="json",
+                options={"temperature": temperature}
+            )
+
+            # Validate against schema
+            content = response.message.content
+            try:
+                data = json.loads(content)
+                schema.model_validate(data)
+            except Exception as e:
+                raise ProviderError(f"Invalid JSON response: {str(e)}")
+
+            return ModelResponse(
+                content=content,
+                raw_response=self._response_to_dict(response),
+                usage=self._extract_usage(response),
+                tool_calls=preserve_tool_calls
+            )
+        except Exception as e:
+            raise ProviderError(f"Ollama async JSON completion failed: {str(e)}")
+
         return super()._aget_json_completion(messages, model, schema, temperature, max_tokens)
     
     async def _aget_tool_completion(
