@@ -29,6 +29,11 @@ class OllamaFactory(ProviderFactory):
 class OllamaProvider(LLMInterface):
     """Ollama-specific provider implementation"""
 
+    def __init__(self, config: ProviderConfig, debug: bool = False):
+        """Initialize provider with both sync and async clients"""
+        super().__init__(config, debug)
+        self._async_client = None  # Initialize async client lazily
+
     def _setup_client(self) -> None:
         """Initialize Ollama client"""
         try:
@@ -70,20 +75,25 @@ class OllamaProvider(LLMInterface):
         self,
         messages: List[Message],
         model: str,
-        params: ChatParameters
+        temperature: float,
+        # max_tokens: Optional[int] = None,
+        stream: Optional[bool] = False
+        # params: ChatParameters
     ) -> ModelResponse:
         """Get a basic chat completion"""
         try:
             # Build options dictionary
             options = {
-                "temperature": params.temperature
+                # "temperature": params.temperature
+                "temperature": temperature
             }
 
             response = self.client.chat(
                 model=model,
                 messages=self._format_messages(messages),
                 options=options,
-                stream=params.stream
+                # stream=params.stream
+                stream=stream
             )
 
             return ModelResponse(
@@ -238,3 +248,72 @@ class OllamaProvider(LLMInterface):
                 print(f"\nExtracted tool call: {json.dumps(tool_calls[-1], indent=2)}")
 
         return tool_calls if tool_calls else None
+
+    async def _asetup_client(self) -> None:
+        """Initialize async OpenAI client"""
+        from ollama import AsyncClient
+        try:
+            self._async_client = AsyncClient(
+                host=self.config.base_url or "http://localhost:11434",
+                # timeout=self.config.timeout,
+                # max_retries=self.config.max_retries
+            )
+        except Exception as e:
+            raise ProviderError(f"Failed to initialize async OpenAI client: {str(e)}")
+        
+    async def _ensure_async_client(self) -> None:
+        """Ensure async client is initialized"""
+        if self._async_client is None:
+            await self._asetup_client()
+    
+    async def _aget_chat_completion(self, messages, model, temperature, max_tokens = None):
+        """Get a basic chat completion asynchronously"""
+        try:
+            await self._ensure_async_client()
+            response = await self._async_client.chat(
+                model=model,
+                messages=[msg.model_dump() for msg in messages],
+                options={"temperature": temperature}
+            )
+
+            return ModelResponse(
+                content=self._extract_content(response),
+                raw_response=self._response_to_dict(response),
+                usage=self._extract_usage(response),
+                tool_calls=None
+            )
+        except Exception as e:
+            raise ProviderError(f"Ollama async completion failed: {str(e)}")
+    
+    def _aget_json_completion(self, messages, model, schema, temperature, max_tokens = None):
+        return super()._aget_json_completion(messages, model, schema, temperature, max_tokens)
+    
+    def _aget_tool_completion(self, messages, model, tools, temperature, max_tokens = None, format_json = False, json_schema = None):
+        return super()._aget_tool_completion(messages, model, tools, temperature, max_tokens, format_json, json_schema)
+    
+    def _response_to_dict(self, response: Any) -> Dict[str, Any]:
+        """Convert Ollama response to dictionary"""
+        return {
+            "message": {
+                "role": response.message.role,
+                "content": response.message.content,
+                "tool_calls": [
+                    {
+                        "id": tool_call.id,
+                        "type": tool_call.type,
+                        "function": {
+                            "name": tool_call.function.name,
+                            "arguments": tool_call.function.arguments
+                        }
+                    }
+                    for tool_call in (response.message.tool_calls or [])
+                ] if response.message.tool_calls else None
+            },
+            # "usage": {
+            #     "prompt_tokens": response.usage.prompt_tokens,
+            #     "completion_tokens": response.usage.completion_tokens,
+            #     "total_tokens": response.usage.total_tokens
+            # },
+            "model": response.model,
+            "created_at": response.created_at
+        }
