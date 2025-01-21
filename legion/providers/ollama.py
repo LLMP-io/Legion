@@ -288,9 +288,123 @@ class OllamaProvider(LLMInterface):
     def _aget_json_completion(self, messages, model, schema, temperature, max_tokens = None):
         return super()._aget_json_completion(messages, model, schema, temperature, max_tokens)
     
-    def _aget_tool_completion(self, messages, model, tools, temperature, max_tokens = None, format_json = False, json_schema = None):
-        return super()._aget_tool_completion(messages, model, tools, temperature, max_tokens, format_json, json_schema)
-    
+    async def _aget_tool_completion(
+            self,
+            messages,
+            model,
+            tools,
+            temperature,
+            max_tokens = None,
+            format_json = False,
+            json_schema = None
+        ):
+        "Get completion with tool usage asynchronously"""
+        await self._ensure_async_client()
+        current_messages = list(messages)
+        all_tool_calls = []
+
+        try:
+            # First phase: Use tools
+            while True:
+                if self.debug:
+                    print("\n🔄 Making async Ollama API call:")
+                    print(f"Messages count: {len(current_messages)}")
+                    print("Tools:", [t.name for t in tools])
+
+                # Convert messages and tools to dict format
+                message_dicts = self._format_messages(current_messages)
+                tool_dicts = [t.model_dump() for t in tools]
+
+                try:
+                    response = await self._async_client.chat(
+                        model=model,
+                        messages=message_dicts,
+                        tools=tool_dicts,
+                        options={"temperature": temperature}
+                    )
+                except Exception as api_error:
+                    if self.debug:
+                        print(f"\n❌ Async API call failed: {str(api_error)}")
+                    raise
+
+                content = response.message.content or ""
+
+                # Process tool calls if any
+                if response.message.tool_calls:
+                    # First add the assistant's message with tool calls
+                    tool_call_data = []
+                    for id, tool_call in enumerate(response.message.tool_calls):
+                        call_data = {
+                            "id": id,
+                            "type": "function",
+                            "function": {
+                                "name": tool_call.function.name,
+                                "arguments": tool_call.function.arguments
+                            }
+                        }
+                        tool_call_data.append(call_data)
+
+                    # Add the assistant's message with tool calls
+                    current_messages.append(Message(
+                        role=Role.ASSISTANT,
+                        content=content,
+                        tool_calls=tool_call_data
+                    ))
+
+                    # TODO: Do this processing as part of above loop
+                    # Process each tool call
+                    for id, tool_call in enumerate(response.message.tool_calls):
+                        tool = next(
+                            (t for t in tools if t.name == tool_call.function.name),
+                            None
+                        )
+
+                        if tool:
+                            # args = json.loads(tool_call.function.arguments)
+                            args = tool_call.function.arguments
+                            result = await tool.arun(**args)  # Use async tool call
+
+                            if self.debug:
+                                print(f"Tool {tool.name} returned: {result}")
+
+                            # Add the tool's response
+                            current_messages.append(Message(
+                                role=Role.TOOL,
+                                content=json.dumps(result) if isinstance(result, dict) else str(result),
+                                tool_call_id=str(id),
+                                name=tool_call.function.name
+                            ))
+
+                            # Store tool call for final response
+                            call_data = next(
+                                c for c in tool_call_data
+                                if c["id"] == id
+                            )
+                            call_data["result"] = json.dumps(result) if isinstance(result, dict) else str(result)
+                            all_tool_calls.append(call_data)
+                    continue
+
+                # No more tool calls - get final response
+                if format_json and json_schema:
+                    json_response = await self._aget_json_completion(
+                        messages=current_messages,
+                        model=model,
+                        schema=json_schema,
+                        temperature=0.0,
+                        preserve_tool_calls=all_tool_calls if all_tool_calls else None
+                    )
+                    return json_response
+
+                return ModelResponse(
+                    content=content,
+                    raw_response=self._response_to_dict(response),
+                    tool_calls=all_tool_calls if all_tool_calls else None,
+                    usage=self._extract_usage(response)
+                )
+
+        except Exception as e:
+            raise ProviderError(f"Ollama async tool completion failed: {str(e)}")
+
     def _response_to_dict(self, response: Any) -> Dict[str, Any]:
         """Convert Ollama response to dictionary"""
         return {
