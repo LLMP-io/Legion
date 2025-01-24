@@ -1,6 +1,7 @@
 """Ollama-specific implementation of the LLM interface"""
 
 import json
+import ast
 from typing import Any, Dict, List, Optional, Sequence, Type
 
 from pydantic import BaseModel
@@ -8,7 +9,6 @@ from pydantic import BaseModel
 from ..errors import ProviderError
 from ..interface.base import LLMInterface
 from ..interface.schemas import (
-    ChatParameters,
     Message,
     ModelResponse,
     ProviderConfig,
@@ -70,6 +70,21 @@ class OllamaProvider(LLMInterface):
                 })
 
         return ollama_messages
+
+    def _format_arguments(
+            self,
+            arguments: Any
+    ):
+        """Convert Tools Arguments into JSON"""
+        if isinstance(arguments, dict):
+            try:
+                args = {k:ast.literal_eval(v) for k,v in arguments.items()}
+            except Exception as e:
+                args = arguments
+        else:
+                args = arguments
+        return json.dumps(args)
+        
 
     def _get_chat_completion(
         self,
@@ -386,11 +401,11 @@ class OllamaProvider(LLMInterface):
                     tool_call_data = []
                     for id, tool_call in enumerate(response.message.tool_calls):
                         call_data = {
-                            "id": id,
+                            "id": str(id),
                             "type": "function",
                             "function": {
                                 "name": tool_call.function.name,
-                                "arguments": tool_call.function.arguments
+                                "arguments": self._format_arguments(tool_call.function.arguments)
                             }
                         }
                         tool_call_data.append(call_data)
@@ -402,7 +417,6 @@ class OllamaProvider(LLMInterface):
                         tool_calls=tool_call_data
                     ))
 
-                    # TODO: Do this processing as part of above loop
                     # Process each tool call
                     for id, tool_call in enumerate(response.message.tool_calls):
                         tool = next(
@@ -411,8 +425,7 @@ class OllamaProvider(LLMInterface):
                         )
 
                         if tool:
-                            # args = json.loads(tool_call.function.arguments)
-                            args = tool_call.function.arguments
+                            args = json.loads(self._format_arguments(tool_call.function.arguments))
                             result = await tool.arun(**args)  # Use async tool call
 
                             if self.debug:
@@ -429,7 +442,7 @@ class OllamaProvider(LLMInterface):
                             # Store tool call for final response
                             call_data = next(
                                 c for c in tool_call_data
-                                if c["id"] == id
+                                if c["id"] == str(id)
                             )
                             call_data["result"] = json.dumps(result) if isinstance(result, dict) else str(result)
                             all_tool_calls.append(call_data)
@@ -474,11 +487,6 @@ class OllamaProvider(LLMInterface):
                     for tool_call in (response.message.tool_calls or [])
                 ] if response.message.tool_calls else None
             },
-            # "usage": {
-            #     "prompt_tokens": response.usage.prompt_tokens,
-            #     "completion_tokens": response.usage.completion_tokens,
-            #     "total_tokens": response.usage.total_tokens
-            # },
             "model": response.model,
             "created_at": response.created_at
         }
