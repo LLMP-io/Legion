@@ -91,15 +91,12 @@ class OllamaProvider(LLMInterface):
         messages: List[Message],
         model: str,
         temperature: float,
-        # max_tokens: Optional[int] = None,
         stream: Optional[bool] = False
-        # params: ChatParameters
     ) -> ModelResponse:
         """Get a basic chat completion"""
         try:
             # Build options dictionary
             options = {
-                # "temperature": params.temperature
                 "temperature": temperature
             }
 
@@ -107,7 +104,6 @@ class OllamaProvider(LLMInterface):
                 model=model,
                 messages=self._format_messages(messages),
                 options=options,
-                # stream=params.stream
                 stream=stream
             )
 
@@ -270,8 +266,6 @@ class OllamaProvider(LLMInterface):
         try:
             self._async_client = AsyncClient(
                 host=self.config.base_url or "http://localhost:11434",
-                # timeout=self.config.timeout,
-                # max_retries=self.config.max_retries
             )
         except Exception as e:
             raise ProviderError(f"Failed to initialize async OpenAI client: {str(e)}")
@@ -323,7 +317,6 @@ class OllamaProvider(LLMInterface):
 
             # Add remaining messages, skipping system
             messages.extend([
-                # msg.model_dump() for msg in messages
                 msg for msg in messages
                 if msg['role'] != Role.SYSTEM
             ])
