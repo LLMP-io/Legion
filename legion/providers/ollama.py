@@ -352,8 +352,6 @@ class OllamaProvider(LLMInterface):
         except Exception as e:
             raise ProviderError(f"Ollama async JSON completion failed: {str(e)}")
 
-        return super()._aget_json_completion(messages, model, schema, temperature, max_tokens)
-    
     async def _aget_tool_completion(
             self,
             messages,
