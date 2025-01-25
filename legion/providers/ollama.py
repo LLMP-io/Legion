@@ -1,7 +1,7 @@
 """Ollama-specific implementation of the LLM interface"""
 
-import json
 import ast
+import json
 from typing import Any, Dict, List, Optional, Sequence, Type
 
 from pydantic import BaseModel
@@ -79,12 +79,12 @@ class OllamaProvider(LLMInterface):
         if isinstance(arguments, dict):
             try:
                 args = {k:ast.literal_eval(v) for k,v in arguments.items()}
-            except Exception as e:
+            except Exception:
                 args = arguments
         else:
                 args = arguments
         return json.dumps(args)
-        
+
 
     def _get_chat_completion(
         self,
@@ -269,12 +269,12 @@ class OllamaProvider(LLMInterface):
             )
         except Exception as e:
             raise ProviderError(f"Failed to initialize async OpenAI client: {str(e)}")
-        
+
     async def _ensure_async_client(self) -> None:
         """Ensure async client is initialized"""
         if self._async_client is None:
             await self._asetup_client()
-    
+
     async def _aget_chat_completion(self, messages, model, temperature, max_tokens = None):
         """Get a basic chat completion asynchronously"""
         try:
@@ -293,7 +293,7 @@ class OllamaProvider(LLMInterface):
             )
         except Exception as e:
             raise ProviderError(f"Ollama async completion failed: {str(e)}")
-    
+
     async def _aget_json_completion(
             self,
             messages,
@@ -318,7 +318,7 @@ class OllamaProvider(LLMInterface):
             # Add remaining messages, skipping system
             messages.extend([
                 msg for msg in messages
-                if msg['role'] != Role.SYSTEM
+                if msg["role"] != Role.SYSTEM
             ])
 
             response = await self._async_client.chat(

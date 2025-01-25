@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import pytest
@@ -153,18 +152,6 @@ async def test_async_completion(provider):
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
     assert len(response.content) > 0
-
-# @pytest.mark.asyncio
-# async def test_invalid_api_key():
-#     config = ProviderConfig(api_key="invalid_key")
-#     provider = OllamaProvider(config=config)
-#     messages = [Message(role=Role.USER, content="test")]
-
-#     with pytest.raises(ProviderError):
-#         await provider.complete(
-#             messages=messages,
-#             model=MODEL
-#         )
 
 @pytest.mark.asyncio
 async def test_invalid_model(provider):
