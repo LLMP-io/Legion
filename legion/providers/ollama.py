@@ -261,14 +261,14 @@ class OllamaProvider(LLMInterface):
         return tool_calls if tool_calls else None
 
     async def _asetup_client(self) -> None:
-        """Initialize async OpenAI client"""
+        """Initialize async Ollama client"""
         from ollama import AsyncClient
         try:
             self._async_client = AsyncClient(
                 host=self.config.base_url or "http://localhost:11434",
             )
         except Exception as e:
-            raise ProviderError(f"Failed to initialize async OpenAI client: {str(e)}")
+            raise ProviderError(f"Failed to initialize async Ollama client: {str(e)}")
 
     async def _ensure_async_client(self) -> None:
         """Ensure async client is initialized"""

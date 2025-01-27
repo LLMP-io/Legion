@@ -40,9 +40,7 @@ class SimpleTool(BaseTool):
 
 @pytest.fixture
 def provider():
-    config = ProviderConfig(
-        # api_key=os.getenv("OLLAMA_API_KEY", "test-key")
-    )
+    config = ProviderConfig()
     return OllamaProvider(config=config)
 
 @pytest.fixture
@@ -54,9 +52,7 @@ def test_provider_initialization(provider):
     assert provider.client is not None
 
 def test_factory_creation(factory):
-    config = ProviderConfig(
-        # api_key=os.getenv("OLLAMA_API_KEY", "test-key")
-    )
+    config = ProviderConfig()
     provider = factory.create_provider(config=config)
     assert isinstance(provider, OllamaProvider)
 
