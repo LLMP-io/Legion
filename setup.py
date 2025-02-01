@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="legion",
+    name="legion-ai",
     version="0.1.0",
     description="A flexible and provider-agnostic framework for building AI agent systems.",
     url="https://github.com/LLMP-io/Legion",
     packages=find_packages(include=["legion", "legion.*"]),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: MIT License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.11",
