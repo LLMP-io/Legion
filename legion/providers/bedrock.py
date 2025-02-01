@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Sequence, Type, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
 
 import boto3
 from pydantic import BaseModel
@@ -43,7 +43,7 @@ class BedrockProvider(LLMInterface):
                 aws_secret_access_key=self.config.api_secret,
                 region_name=self.config.region or "us-east-1"
             )
-            self._client = self._session.client(service_name='bedrock-runtime')
+            self._client = self._session.client(service_name="bedrock-runtime")
         except Exception as e:
             raise ProviderError(f"Failed to initialize AWS Bedrock client: {str(e)}")
 
@@ -56,7 +56,7 @@ class BedrockProvider(LLMInterface):
         """Format messages for the API request, separating system messages"""
         system_messages = []
         chat_messages = []
-        
+
         for msg in messages:
             if msg.role == Role.SYSTEM:
                 system_messages.append({"text": msg.content})
@@ -65,7 +65,7 @@ class BedrockProvider(LLMInterface):
                     "role": "assistant" if msg.role == Role.ASSISTANT else "user",
                     "content": [{"text": msg.content}]
                 })
-        
+
         return chat_messages, system_messages if system_messages else None
 
     def _format_tools(self, tools: Sequence[BaseTool]) -> List[Dict[str, Any]]:
@@ -86,46 +86,46 @@ class BedrockProvider(LLMInterface):
     def _extract_content(self, response: Any) -> str:
         """Extract content from the response"""
         try:
-            if not response.get('output'):
+            if not response.get("output"):
                 return ""
-            
-            message = response['output']['message']
-            content = message.get('content', [])
-            
+
+            message = response["output"]["message"]
+            content = message.get("content", [])
+
             # Extract text from all content blocks
             text_parts = []
             for block in content:
-                if isinstance(block, dict) and 'text' in block:
-                    text_parts.append(block['text'])
-            
-            return ' '.join(text_parts)
+                if isinstance(block, dict) and "text" in block:
+                    text_parts.append(block["text"])
+
+            return " ".join(text_parts)
         except Exception as e:
             raise ProviderError(f"Failed to extract content from response: {str(e)}")
 
     def _extract_tool_calls(self, response: Any) -> Optional[List[Dict[str, Any]]]:
         """Extract tool calls from the response"""
         try:
-            output = response.get('output', {}).get('message', {})
-            content = output.get('content', [])
-            
+            output = response.get("output", {}).get("message", {})
+            content = output.get("content", [])
+
             # Look for toolUse in any content block
             for block in content:
-                if isinstance(block, dict) and 'toolUse' in block:
-                    tool_use = block['toolUse']
+                if isinstance(block, dict) and "toolUse" in block:
+                    tool_use = block["toolUse"]
                     # Ensure we have both name and input
-                    if not tool_use.get('name') or not tool_use.get('input'):
+                    if not tool_use.get("name") or not tool_use.get("input"):
                         continue
-                        
+
                     # Format the tool call
                     return [{
                         "id": "call_1",
                         "type": "function",
                         "function": {
-                            "name": tool_use['name'],
-                            "arguments": json.dumps(tool_use['input'])
+                            "name": tool_use["name"],
+                            "arguments": json.dumps(tool_use["input"])
                         }
                     }]
-            
+
             # If no valid tool use found, check the text content for tool calls
             text_content = self._extract_content(response)
             if "simple_tool" in text_content.lower() and "hello world" in text_content.lower():
@@ -137,7 +137,7 @@ class BedrockProvider(LLMInterface):
                         "arguments": json.dumps({"message": "hello world"})
                     }
                 }]
-            
+
             return None
         except Exception as e:
             raise ProviderError(f"Failed to extract tool calls: {str(e)}")
@@ -145,11 +145,11 @@ class BedrockProvider(LLMInterface):
     def _extract_usage(self, response: Any) -> TokenUsage:
         """Extract token usage from the response"""
         try:
-            usage = response.get('usage', {})
+            usage = response.get("usage", {})
             return TokenUsage(
-                prompt_tokens=usage.get('inputTokens', 0),
-                completion_tokens=usage.get('outputTokens', 0),
-                total_tokens=usage.get('totalTokens', 0)
+                prompt_tokens=usage.get("inputTokens", 0),
+                completion_tokens=usage.get("outputTokens", 0),
+                total_tokens=usage.get("totalTokens", 0)
             )
         except Exception:
             return TokenUsage(prompt_tokens=0, completion_tokens=0, total_tokens=0)
@@ -326,7 +326,7 @@ class BedrockProvider(LLMInterface):
                     f"Example: {json.dumps(example_obj, indent=2)}\n"
                     f"Make sure to include all required fields (name, age, hobbies) in your response."
                 )
-                last_msg['content'][0]['text'] += schema_text
+                last_msg["content"][0]["text"] += schema_text
 
             request_body = {
                 "messages": chat_messages,
@@ -375,13 +375,13 @@ class BedrockProvider(LLMInterface):
 
                 # Try to parse and validate
                 data = json.loads(json_str)
-                
+
                 # Ensure all required fields are present
                 required_fields = {"name", "age", "hobbies"}
                 missing_fields = required_fields - set(data.keys())
                 if missing_fields:
                     raise ProviderError(f"Missing required fields in JSON response: {missing_fields}")
-                
+
                 # Validate against schema
                 schema.model_validate(data)
                 content = json_str
@@ -410,7 +410,7 @@ class BedrockProvider(LLMInterface):
         try:
             # First get the tool completion
             tool_response = self._get_tool_completion(messages, model, tools, temperature, max_tokens)
-            
+
             # If we got tool calls, append the tool response to messages
             if tool_response.tool_calls:
                 tool_result = (
@@ -419,7 +419,7 @@ class BedrockProvider(LLMInterface):
                 )
                 messages = list(messages)  # Create a copy
                 messages.append(Message(role=Role.ASSISTANT, content=tool_result))
-            
+
             # Now get the JSON completion
             json_response = self._get_json_completion(
                 messages=messages,
@@ -429,7 +429,7 @@ class BedrockProvider(LLMInterface):
                 max_tokens=max_tokens,
                 preserve_tool_calls=tool_response.tool_calls
             )
-            
+
             return json_response
         except Exception as e:
             raise ProviderError(f"AWS Bedrock tool and JSON completion failed: {str(e)}")
@@ -445,4 +445,4 @@ class BedrockProvider(LLMInterface):
     ) -> ModelResponse:
         """Get a JSON-formatted chat completion asynchronously"""
         # AWS Bedrock doesn't have async support, so we'll use the sync version
-        return self._get_json_completion(messages, model, schema, temperature, max_tokens, preserve_tool_calls) 
+        return self._get_json_completion(messages, model, schema, temperature, max_tokens, preserve_tool_calls)

@@ -1,6 +1,5 @@
 """Tests for the Anthropic provider implementation"""
 
-import json
 import os
 from typing import List
 

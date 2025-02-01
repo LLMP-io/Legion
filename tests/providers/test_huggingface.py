@@ -83,7 +83,7 @@ async def test_tool_completion(provider):
     import asyncio
     tool = SimpleTool()
     messages = [
-        Message(role=Role.SYSTEM, content="You are a helpful assistant that uses tools when appropriate. When asked to use a tool, respond with a tool call in this format: {\"name\": \"tool_name\", \"arguments\": {\"message\": \"hello world\"}}"),
+        Message(role=Role.SYSTEM, content='You are a helpful assistant that uses tools when appropriate. When asked to use a tool, respond with a tool call in this format: {"name": "tool_name", "arguments": {"message": "hello world"}}'),
         Message(role=Role.USER, content="Please use the simple_tool to say hello. Respond with a tool call only.")
     ]
     try:
@@ -144,7 +144,7 @@ async def test_tool_and_json_completion(provider):
     import asyncio
     tool = SimpleTool()
     messages = [
-        Message(role=Role.SYSTEM, content="You are a helpful assistant that uses tools and returns structured data. When asked to use a tool, respond with a tool call in this format: {\"name\": \"tool_name\", \"arguments\": {\"message\": \"hello world\"}}"),
+        Message(role=Role.SYSTEM, content='You are a helpful assistant that uses tools and returns structured data. When asked to use a tool, respond with a tool call in this format: {"name": "tool_name", "arguments": {"message": "hello world"}}'),
         Message(role=Role.USER, content="First use the simple_tool to say hello (respond with a tool call), then after getting the tool response, format it as a person's info")
     ]
     try:

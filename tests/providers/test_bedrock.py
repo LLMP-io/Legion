@@ -1,13 +1,13 @@
+import json
 import os
 from typing import List
-from pydantic import BaseModel
 
 import pytest
 from dotenv import load_dotenv
-import json
+from pydantic import BaseModel
 
 from legion.errors import ProviderError
-from legion.interface.schemas import Message, ModelResponse, ProviderConfig, Role, TokenUsage
+from legion.interface.schemas import Message, ModelResponse, ProviderConfig, Role
 from legion.interface.tools import BaseTool
 from legion.providers.bedrock import BedrockFactory, BedrockProvider
 
@@ -75,7 +75,7 @@ async def test_basic_completion(provider):
         model="us.amazon.nova-lite-v1:0",
         temperature=0
     )
-    
+
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
     assert len(response.content) > 0
@@ -94,7 +94,7 @@ async def test_tool_completion(provider):
         tools=[tool],
         temperature=0
     )
-    
+
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
     assert len(response.content) > 0
@@ -118,7 +118,7 @@ async def test_json_completion(provider):
         response_schema=TestSchema,
         temperature=0
     )
-    
+
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
     assert len(response.content) > 0
@@ -137,7 +137,7 @@ async def test_tool_and_json_completion(provider):
     messages = [
         Message(role=Role.SYSTEM, content="You are a helpful assistant that uses tools when appropriate."),
         Message(
-            role=Role.USER, 
+            role=Role.USER,
             content="First use the simple_tool with the message 'hello world', then create a JSON response about a person named Alice who is 30 and likes dancing and singing."
         )
     ]
@@ -149,7 +149,7 @@ async def test_tool_and_json_completion(provider):
         response_schema=TestSchema,
         temperature=0
     )
-    
+
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
     assert len(response.content) > 0
@@ -167,7 +167,7 @@ async def test_tool_and_json_completion(provider):
 @pytest.mark.asyncio
 async def test_invalid_credentials(provider):
     messages = [Message(role=Role.USER, content="Say hello")]
-    
+
     # Create a new provider with invalid credentials
     invalid_config = ProviderConfig(
         api_key="invalid_key",
@@ -175,7 +175,7 @@ async def test_invalid_credentials(provider):
         region="us-east-1"
     )
     invalid_provider = BedrockProvider(config=invalid_config)
-    
+
     with pytest.raises(ProviderError):
         await invalid_provider.acomplete(
             messages=messages,
@@ -205,7 +205,7 @@ async def test_system_message_handling(provider):
         model="us.amazon.nova-lite-v1:0",
         temperature=0
     )
-    
+
     assert isinstance(response, ModelResponse)
     assert isinstance(response.content, str)
-    assert "Hello" in response.content 
+    assert "Hello" in response.content

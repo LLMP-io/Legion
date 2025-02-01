@@ -1,27 +1,6 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.1
 Name: legion
 Version: 0.1.0
-Summary: A unified interface for multiple LLM providers
-Author: Legion Team
-Requires-Python: >=3.8
 License-File: LICENSE
 Requires-Dist: pydantic>=2.0.0
 Requires-Dist: openai>=1.0.0
-Requires-Dist: huggingface-hub>=0.19.0
-Requires-Dist: anthropic>=0.4.0
-Requires-Dist: python-dotenv>=1.0.0
-Requires-Dist: pytest>=7.0.0
-Requires-Dist: pytest-asyncio>=0.23.0
-Requires-Dist: boto3>=1.26.0
-Requires-Dist: google-generativeai>=0.3.0
-Requires-Dist: groq>=0.3.0
-Requires-Dist: httpx>=0.24.0
-Requires-Dist: typing-extensions>=4.0.0
-Provides-Extra: dev
-Requires-Dist: pytest>=7.0.0; extra == "dev"
-Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
-Requires-Dist: python-dotenv>=1.0.0; extra == "dev"
-Provides-Extra: test
-Requires-Dist: pytest>=7.0.0; extra == "test"
-Requires-Dist: pytest-asyncio>=0.23.0; extra == "test"
-Requires-Dist: python-dotenv>=1.0.0; extra == "test"

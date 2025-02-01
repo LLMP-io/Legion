@@ -1,8 +1,8 @@
 # File: llm_kit/providers/huggingface.py
 
 import json
-from typing import Any, Dict, List, Optional, Sequence, Type
 import uuid
+from typing import Any, Dict, List, Optional, Sequence, Type
 
 from openai import AsyncOpenAI, OpenAI
 from pydantic import BaseModel
@@ -14,7 +14,6 @@ from ..interface.schemas import (
     ModelResponse,
     ProviderConfig,
     Role,
-    TokenUsage,
 )
 from ..interface.tools import BaseTool
 from .factory import ProviderFactory
@@ -127,7 +126,7 @@ class HuggingFaceProvider(LLMInterface):
                         temperature=temperature,
                         max_tokens=max_tokens
                     )
-                    
+
                     if self.debug:
                         print("\n📥 Raw API Response:")
                         print(f"ID: {response.id}")
@@ -139,16 +138,16 @@ class HuggingFaceProvider(LLMInterface):
                             print(f"  Index: {choice.index}")
                             print(f"  Message Role: {choice.message.role}")
                             print(f"  Message Content: {choice.message.content}")
-                            if hasattr(choice.message, 'tool_calls'):
+                            if hasattr(choice.message, "tool_calls"):
                                 print(f"  Tool Calls: {choice.message.tool_calls}")
                             print(f"  Finish Reason: {choice.finish_reason}")
 
                     choice = response.choices[0]
                     content = choice.message.content
-                    
+
                     # First check for tool_calls in the message object
                     tool_calls = None
-                    if hasattr(choice.message, 'tool_calls') and choice.message.tool_calls:
+                    if hasattr(choice.message, "tool_calls") and choice.message.tool_calls:
                         tool_calls = [{
                             "id": tool_call.id,
                             "function": {
@@ -193,7 +192,7 @@ class HuggingFaceProvider(LLMInterface):
                                 role=Role.USER,
                                 content="Based on the tool response above, create a JSON object representing a person. Include a name (string), age (number), and hobbies (array of strings). Respond with ONLY the JSON object, no additional text."
                             ))
-                            
+
                             json_response = await self._aget_json_completion(
                                 messages=current_messages,
                                 model=model,
@@ -216,7 +215,7 @@ class HuggingFaceProvider(LLMInterface):
                         if self.debug:
                             print(f"\n⚠️ No tool calls found in response, retrying ({retry_count}/{max_retries})")
                         continue
-                    
+
                     # If we've exhausted retries, return the last response
                     return ModelResponse(
                         content=content or "",  # Convert None to empty string
@@ -297,7 +296,7 @@ class HuggingFaceProvider(LLMInterface):
                 # Try to extract JSON from the response if it's not already JSON
                 if not content.strip().startswith("{"):
                     import re
-                    json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                    json_match = re.search(r"\{.*\}", content, re.DOTALL)
                     if json_match:
                         content = json_match.group(0)
                         print("\n🔍 Extracted JSON:")
@@ -370,7 +369,7 @@ class HuggingFaceProvider(LLMInterface):
             try:
                 # Try to find JSON-formatted tool calls in the content
                 import re
-                json_match = re.search(r'\{.*\}', response, re.DOTALL)
+                json_match = re.search(r"\{.*\}", response, re.DOTALL)
                 if json_match:
                     data = json.loads(json_match.group(0))
                     if isinstance(data, dict) and "name" in data and "arguments" in data:
@@ -558,7 +557,7 @@ class HuggingFaceProvider(LLMInterface):
                         role=Role.USER,
                         content="Based on the tool response above, create a JSON object representing a person. Include a name (string), age (number), and hobbies (array of strings). Respond with ONLY the JSON object, no additional text."
                     ))
-                    
+
                     json_response = self._get_json_completion(
                         messages=current_messages,
                         model=model,

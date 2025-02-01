@@ -159,7 +159,6 @@ class Agent:
 
     def _log_response(self, response: ModelResponse, verbose: bool = False) -> None:
         """Log response details when in verbose mode"""
-
         self._log_message("Agent Response:", verbose, "bold green")
         self._log_message(response.content, verbose)
 
@@ -187,7 +186,6 @@ class Agent:
         verbose: bool = False
     ) -> ModelResponse:
         """Process a message asynchronously and return a response"""
-
         if verbose:
             self.print_hierarchy()
 
