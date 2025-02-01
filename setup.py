@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="legion-ai",
+    name="Legion-ai",
     version="0.1.0",
     description="A flexible and provider-agnostic framework for building AI agent systems.",
     url="https://github.com/LLMP-io/Legion",
