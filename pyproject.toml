@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "legion"
+name = "Legion-ai"
 version = "0.1.0"
 description = "Legion is a flexible and provider-agnostic framework designed to simplify the creation of sophisticated multi-agent systems"
 authors = ["Hayden Smith <hayden@llmp.io>"]
