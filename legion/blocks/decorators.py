@@ -55,7 +55,7 @@ def block(
         block_description = description
         if not block_description and func.__doc__:
             block_description = func.__doc__.split("\n")[0].strip()
-            _log_message("Block description not provided, using function docstring instead")
+            _log_message("Block description not provided, using function docstring instead\n")
         block_description = block_description or f"Block: {func.__name__}"
 
         # Only create schemas if explicitly requested or if schemas are provided
