@@ -1,15 +1,23 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="Legion-ai",
-    version="0.1.1",
+    name="legion-ai",
+    version="0.1.2",
     description="A flexible and provider-agnostic framework for building AI agent systems.",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     url="https://github.com/LLMP-io/Legion",
+    author="Hayden Smith, Zain Imdad",
+    author_email="hayden@llmp.io, zain@llmp.io",
+    license="MIT",
     packages=find_packages(include=["legion", "legion.*"]),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Topic :: Agentic AI Systems :: Multi-Agent Systems :: Python Libraries",
     ],
     python_requires=">=3.11",
     install_requires=[
