@@ -1,5 +1,13 @@
-## Description
-<!-- Provide a brief description of your changes -->
+## Summary of Changes
+<!-- List the files you've changed and provide a brief summary of the changes for each -->
+
+### Files Changed
+- `file1.py`
+  - Change description 1
+  - Change description 2
+- `file2.py`
+  - Change description 1
+  - Change description 2
 
 ## Related Issue
 <!-- Link to the issue this PR addresses using #issue-number -->

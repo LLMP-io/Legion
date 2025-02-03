@@ -1,8 +1,11 @@
 [tool.poetry]
-name = "Legion-ai"
-version = "0.1.0"
+name = "legion-ai"
+version = "0.1.1"
 description = "Legion is a flexible and provider-agnostic framework designed to simplify the creation of sophisticated multi-agent systems"
-authors = ["Hayden Smith <hayden@llmp.io>"]
+authors = [
+    "Hayden Smith <hayden@llmp.io>",
+    "Zain Imdad <zain@llmp.io>"
+]
 license = "LICENSE"  # MIT License
 readme = "README.md"
 

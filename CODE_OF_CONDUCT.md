@@ -59,7 +59,9 @@ when an individual is officially representing the community in public spaces.
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement through:
 - Discord: Contact moderators directly or use the #report channel
-- Email: [hayden@llmp.io](mailto:hayden@llmp.io)
+- Email: 
+  - [hayden@llmp.io](mailto:hayden@llmp.io)
+  - [zain@llmp.io](mailto:zain@llmp.io)
 - GitHub: Open an issue marked [COC]
 
 All complaints will be reviewed and investigated promptly and fairly.

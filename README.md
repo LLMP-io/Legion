@@ -22,7 +22,7 @@ Legion is a flexible and provider-agnostic framework designed to simplify the cr
 ## Installation (WIP, not yet available during pre-release phase)
 
 ```bash
-pip install legion
+pip install legion-ai
 ```
 
 ## Core Concepts
@@ -366,6 +366,11 @@ Eventually, there will be a more comprehensive documentation site.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit pull requests, report issues, or suggest new features.
+
+## Authors
+
+- Hayden Smith (hayden@llmp.io)
+- Zain Imdad (zain@llmp.io)
 
 ## Project Status & Roadmap
 
