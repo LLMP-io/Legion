@@ -1,13 +1,24 @@
 [tool.poetry]
 name = "legion-ai"
-version = "0.1.2"
+version = "0.1.3"
 description = "Legion is a flexible and provider-agnostic framework designed to simplify the creation of sophisticated multi-agent systems"
 authors = [
-    "Hayden Smith <hayden@llmp.io>",
-    "Zain Imdad <zain@llmp.io>"
+    "Zain Imdad, Hayden Smith <zain@llmp.io, hayden@llmp.io>",
 ]
-license = "LICENSE"  # MIT License
+license = "MIT"  # Change from LICENSE to MIT
 readme = "README.md"
+homepage = "https://github.com/LLMP-io/Legion"
+repository = "https://github.com/LLMP-io/Legion"
+keywords = ["ai", "agents", "multi-agent", "llm"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
 
 packages = [{ include = "legion" }]
 
