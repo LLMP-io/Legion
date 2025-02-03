@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="legion-ai",
-    version="0.1.2",
+    version="0.1.3",
     description="A flexible and provider-agnostic framework for building AI agent systems.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -17,7 +17,8 @@ setup(
         "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "Topic :: Agentic AI Systems :: Multi-Agent Systems :: Python Libraries",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     python_requires=">=3.11",
     install_requires=[
