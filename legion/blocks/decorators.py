@@ -1,10 +1,16 @@
 import inspect
+import logging
 from typing import List, Optional, Type
 
 from pydantic import BaseModel
+from rich import print as rprint
+from rich.console import Console
 
 from .base import BlockMetadata, FunctionalBlock
 
+# Set up rich console and logging
+console = Console()
+logger = logging.getLogger(__name__)
 
 def block(
     name: Optional[str] = None,
@@ -13,7 +19,8 @@ def block(
     output_schema: Optional[Type[BaseModel]] = None,
     version: str = "1.0",
     tags: Optional[List[str]] = None,
-    validate: bool = True
+    validate: bool = True,
+    debug: Optional[bool] = False
 ):
     """Decorator to create a functional block
 
@@ -28,7 +35,19 @@ def block(
         ...
 
     """
+
+    def _log_message(message: str, color: str = None) -> None:
+        """Internal method for consistent logging"""
+        if debug:
+            if color:
+                rprint(f"\n[{color}]{message}[/{color}]")
+            else:
+                rprint(f"\n{message}")
+
     def decorator(func):
+
+        _log_message(f"Decorating function {func.__name__}", color="bold blue")
+
         # Extract function signature
         inspect.signature(func)
 
@@ -36,6 +55,7 @@ def block(
         block_description = description
         if not block_description and func.__doc__:
             block_description = func.__doc__.split("\n")[0].strip()
+            _log_message("Block description not provided, using function docstring instead\n")
         block_description = block_description or f"Block: {func.__name__}"
 
         # Only create schemas if explicitly requested or if schemas are provided

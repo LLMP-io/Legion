@@ -5,9 +5,12 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, List, Optional, Type, get_args, get_origin
 
 from pydantic import BaseModel
+from rich import print as rprint
+from rich.console import Console
 
-# Set up logging
-logger = logging.getLogger(__name__)
+# Set up rich console and logging
+console = Console()
+logger = logging.getLogger("legion")
 
 @dataclass
 class BlockMetadata:
@@ -50,7 +53,7 @@ class FunctionalBlock:
         # Store original function signature
         self.signature = inspect.signature(func)
 
-        logger.debug(f"Initialized block {metadata.name} (async={self.is_async})")
+        self._log_message(f"\n🟦 Initialized block {self.metadata.name} (async={self.is_async})", color="bold blue")
 
     def _validate_input(self, data: Any) -> Any:
         """Validate input data against schema if present"""
@@ -128,9 +131,28 @@ class FunctionalBlock:
                 schema=self.metadata.output_schema.__name__
             )
 
-    async def __call__(self, input_data: Any) -> Any:
+    def _log_message(self, message: str, verbose: bool = False, color: str = None) -> None:
+        """Internal method for consistent logging"""
+        if verbose:
+            if color:
+                rprint(f"\n[{color}]{message}[/{color}]")
+            else:
+                rprint(f"\n{message}")
+
+    async def __call__(
+        self,
+        input_data: Any,
+        verbose: bool = False
+    ) -> Any:
         """Execute the block with validation"""
-        logger.debug(f"Executing block {self.metadata.name}")
+        self._log_message(f"\n🟦 Executing block {self.metadata.name}", verbose, color="bold blue")
+        self._log_message(f"Description: {self.metadata.description}", verbose)
+        if self.metadata.input_schema:
+            self._log_message(f"Input Schema: {self.metadata.input_schema}", verbose)
+        if self.metadata.output_schema:
+            self._log_message(f"Output Schema: {self.metadata.output_schema}", verbose)
+        self._log_message(f"Version: {self.metadata.version}", verbose)
+        self._log_message(f"Tags: {self.metadata.tags}", verbose)
 
         try:
             # Validate input
@@ -150,19 +172,19 @@ class FunctionalBlock:
 
                 # Validate output
                 validated_output = self._validate_output(result)
-                logger.debug(f"Block {self.metadata.name} completed successfully")
+                self._log_message(f"\n✅ Block {self.metadata.name} completed successfully\n", verbose, color="bold blue")
                 return validated_output
 
             except ValidationError:
                 raise
             except Exception as e:
-                logger.error(f"Block {self.metadata.name} failed: {str(e)}")
+                self._log_message(f"\n❌ Block {self.metadata.name} failed: {str(e)}", verbose, "bold red")
                 raise BlockError(f"Block execution failed: {str(e)}") from e
 
         except ValidationError:
             raise
         except Exception as e:
-            logger.error(f"Block {self.metadata.name} failed: {str(e)}")
+            self._log_message(f"\n❌ Block {self.metadata.name} failed: {str(e)}", verbose, "bold red")
             raise BlockError(f"Block execution failed: {str(e)}") from e
 
     def __get__(self, obj, objtype=None):
