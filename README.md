@@ -27,6 +27,26 @@ pip install legion-ai
 
 ## Core Concepts
 
+### API Structure: Decorators and Base Classes
+
+Legion provides a dual-layer API structure:
+
+1. **Simplified Decorator API** (Top-level imports):
+   ```python
+   from legion import agent, block, chain, tool
+   ```
+   These decorators provide a quick, intuitive way to create components with minimal boilerplate. They're perfect for most use cases and are imported directly from the top-level `legion` package.
+
+2. **Advanced Base Class API** (Module-level imports):
+   ```python
+   from legion.agents.base import Agent
+   from legion.groups.chain import Chain
+   from legion.interface.tools import BaseTool
+   ```
+   These base classes provide more control and customization options. They're useful when you need to extend functionality or have specific requirements that the decorators don't cover.
+
+This dual-layer approach gives you both simplicity for common use cases and flexibility for advanced scenarios.
+
 ### Agents
 
 Agents are the fundamental building blocks of Legion. They are defined using the `@agent` decorator and can have:
@@ -322,8 +342,6 @@ This will:
 
 You can also:
 ```bash
-make lint POETRY=<true|false>
-or
 make test POETRY=<true|false>
 ```
 

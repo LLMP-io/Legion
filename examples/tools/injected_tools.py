@@ -10,8 +10,8 @@ from colorama import Fore, Style, init
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents import agent
-from legion.interface.decorators import param, tool  # noqa: F401
+from legion import agent, tool
+
 
 load_dotenv()
 

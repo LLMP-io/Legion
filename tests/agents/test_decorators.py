@@ -5,9 +5,8 @@ import pytest
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
+from legion import agent, tool, system_prompt
 from legion.agents.base import Agent
-from legion.agents.decorators import agent
-from legion.interface.decorators import tool
 from legion.interface.schemas import ModelResponse, SystemPrompt, SystemPromptSection
 
 # Load environment variables

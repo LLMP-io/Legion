@@ -9,8 +9,7 @@ from typing import Annotated, List
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents import agent
-from legion.interface.decorators import tool
+from legion import agent, tool
 
 load_dotenv()
 

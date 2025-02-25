@@ -12,9 +12,7 @@ from typing import Annotated, Dict, List
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents.decorators import agent
-from legion.groups.decorators import leader, team
-from legion.interface.decorators import tool
+from legion import agent, leader, team, tool
 from legion.memory.providers.memory import InMemoryProvider
 
 load_dotenv()

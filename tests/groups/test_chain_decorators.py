@@ -18,9 +18,7 @@ if not os.getenv("OPENAI_API_KEY"):
     print("    export OPENAI_API_KEY=your_api_key_here")
     exit(1)
 
-from legion.agents.decorators import agent
-from legion.blocks.decorators import block
-from legion.groups.decorators import chain
+from legion import agent, block, chain
 from legion.interface.schemas import Message, ModelResponse, Role, SystemPrompt, SystemPromptSection
 
 

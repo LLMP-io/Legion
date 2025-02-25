@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import json
 
 from legion.errors import ProviderError
-from legion.interface.schemas import Message, ModelResponse, ProviderConfig, Role, TokenUsage
+from legion.interface.schemas import Message, ModelResponse, ProviderConfig, Role
 from legion.interface.tools import BaseTool
 from legion.providers.bedrock import BedrockFactory, BedrockProvider
 

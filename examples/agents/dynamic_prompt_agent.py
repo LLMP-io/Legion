@@ -17,9 +17,7 @@ from typing import Annotated
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents import agent
-from legion.interface.decorators import tool
-from legion.interface.schemas import SystemPrompt, SystemPromptSection
+from legion import agent, tool, system_prompt
 
 load_dotenv()
 
@@ -30,26 +28,26 @@ def get_current_time() -> str:
 
 
 # Create a dynamic system prompt with section IDs for runtime updates
-SYSTEM_PROMPT = SystemPrompt(
+SYSTEM_PROMPT = system_prompt(
     sections=[
-        SystemPromptSection(
+        system_prompt.SystemPromptSection(
             content="I am a helpful assistant that adapts my communication style "
                     "based on context.",
             is_dynamic=False
         ),
-        SystemPromptSection(
+        system_prompt.SystemPromptSection(
             content="{mood}",
             is_dynamic=True,
             section_id="mood",
             default_value="neutral and ready to help"
         ),
-        SystemPromptSection(
+        system_prompt.SystemPromptSection(
             content="{context}",
             is_dynamic=True,
             section_id="context",
             default_value="general assistance"
         ),
-        SystemPromptSection(
+        system_prompt.SystemPromptSection(
             content="{time}",
             is_dynamic=True,
             section_id="time",

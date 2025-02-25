@@ -14,8 +14,7 @@ from typing import Annotated, List, Optional
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
-from legion.agents import agent
-from legion.interface.decorators import tool
+from legion import agent, tool
 
 # Load environment variables
 load_dotenv()

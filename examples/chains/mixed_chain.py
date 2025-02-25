@@ -18,9 +18,7 @@ from typing import Dict, List
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
-from legion.agents.decorators import agent
-from legion.blocks.decorators import block
-from legion.groups.decorators import chain
+from legion import agent, block, chain
 
 load_dotenv()
 
@@ -41,6 +39,12 @@ class NormalizedText(BaseModel):
     word_count: int
 
 
+class TextInput(BaseModel):
+    """Schema for text input."""
+    
+    text: str
+
+
 class TextMetrics(BaseModel):
     """Schema for text metrics output."""
 
@@ -49,9 +53,16 @@ class TextMetrics(BaseModel):
     key_phrases: List[str]
 
 
-@block(output_schema=NormalizedText)
-def normalize_text(text: str) -> Dict:
+class SummaryInput(BaseModel):
+    """Schema for summary input."""
+    
+    text: str
+
+
+@block(input_schema=TextInput, output_schema=NormalizedText)
+def normalize_text(input_data: TextInput) -> Dict:
     """Block that normalizes text by cleaning whitespace and counting stats."""
+    text = input_data.text
     print("\nNormalize Block Input:", text[:100], "...")
 
     # Remove extra whitespace and normalize line endings
@@ -87,9 +98,10 @@ class Summarizer:
     pass
 
 
-@block(output_schema=TextMetrics)
-def extract_metrics(text: str) -> Dict:
+@block(input_schema=SummaryInput, output_schema=TextMetrics)
+def extract_metrics(input_data: SummaryInput) -> Dict:
     """Block that extracts key metrics from text."""
+    text = input_data.text
     print("\nMetrics Block Input:", text[:100], "...")
 
     sentences = [s.strip() for s in text.split(".") if s.strip()]
@@ -137,7 +149,9 @@ async def main():
     """
 
     # Process the text through the chain
-    result = await processor.aprocess(text)
+    # Wrap the text in a JSON object to match the input schema
+    input_json = json.dumps({"text": text})
+    result = await processor.aprocess(input_json)
     metrics = json.loads(result.content)
 
     print("\nFinal Output:")
