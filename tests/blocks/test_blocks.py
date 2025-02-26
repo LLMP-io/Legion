@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Optional
 import pytest
 from pydantic import BaseModel
 
+from legion import block
 from legion.blocks.base import BlockError, BlockMetadata, FunctionalBlock, ValidationError
-from legion.blocks.decorators import block
 
 
 # Test Models

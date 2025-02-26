@@ -45,8 +45,6 @@ Welcome! We're excited you're interested in contributing to Legion. This documen
 
       You can also:
       ```bash
-      make lint POETRY=<true|false>
-      or
       make test POETRY=<true|false>
       ```
 
@@ -128,7 +126,6 @@ We use mypy for static type checking. Key requirements:
 
 2. The pre-commit hooks will automatically run:
    - Non-integration tests
-   - Style checking with ruff
    - Security checks with bandit and safety
 
    You can also run these checks manually:
@@ -154,13 +151,7 @@ python scripts/typecheck.py
 python scripts/typecheck.py legion/agents legion/blocks
 ```
 
-5. Run code style checks:
-```bash
-# Run ruff linter
-python scripts/lint.py
-```
-
-6. Run security checks:
+5. Run security checks:
 ```bash
 # Run security scans
 python scripts/security.py
@@ -169,8 +160,8 @@ python scripts/security.py
 python scripts/security.py legion/agents legion/blocks
 ```
 
-7. Update documentation if needed
-8. Add tests for new features
+6. Update documentation if needed
+7. Add tests for new features
 
 ## Pull Request Process
 

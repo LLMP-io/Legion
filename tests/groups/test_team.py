@@ -6,9 +6,8 @@ import pytest
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents.decorators import agent
+from legion import agent, tool
 from legion.groups.team import Team
-from legion.interface.decorators import tool
 from legion.interface.schemas import Message, ModelResponse, Role
 
 # Load environment variables for OpenAI API key

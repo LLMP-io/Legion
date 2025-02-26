@@ -44,14 +44,6 @@ setup:
 	@make pre-commit POETRY=$(POETRY)
 	@echo "You will still need to activate the environment with 'conda activate legion'."
 
-# Linting
-lint:
-	@if [ "$(POETRY)" = "true" ]; then \
-		poetry run python scripts/lint.py; \
-	else \
-		python scripts/lint.py; \
-	fi
-
 # Testing
 test:
 	@if [ "$(POETRY)" = "true" ]; then \

@@ -13,13 +13,12 @@ from typing import Any, Dict, List  # noqa: F401
 
 from pydantic import BaseModel, Field
 
-from legion.blocks import block
-from legion.groups.decorators import chain
+from legion import block, chain
 
 # Set up logging
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(name)s [%(levelname)s]: %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 

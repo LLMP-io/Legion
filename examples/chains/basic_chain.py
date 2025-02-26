@@ -11,9 +11,7 @@ from typing import Annotated
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents import agent
-from legion.groups.decorators import chain
-from legion.interface.decorators import tool
+from legion import agent, chain, tool
 
 load_dotenv()
 
@@ -63,6 +61,9 @@ class TextAnalysisChain:
     # Define the agents in the order they should process
     summarizer = Summarizer()
     analyzer = Analyzer()
+    
+    # Define the members list for the chain
+    members = [Summarizer(), Analyzer()]
 
 
 async def main():

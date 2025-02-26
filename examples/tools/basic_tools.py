@@ -10,8 +10,7 @@ from typing import Annotated, Any, Dict, List  # noqa: F401
 from dotenv import load_dotenv
 from pydantic import Field
 
-from legion.agents import agent
-from legion.interface.decorators import tool
+from legion import agent, tool
 
 load_dotenv()
 

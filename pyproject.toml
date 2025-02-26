@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "legion-ai"
-version = "0.1.4"
+version = "0.1.5"
 description = "Legion is a flexible and provider-agnostic framework designed to simplify the creation of sophisticated multi-agent systems"
 authors = [
     "Zain Imdad, Hayden Smith <zain@llmp.io, hayden@llmp.io>",
@@ -25,7 +25,6 @@ packages = [{ include = "legion" }]
 [tool.poe.tasks]
 test = "pytest -v"
 typecheck = "python scripts/typecheck.py"
-lint = "python scripts/lint.py"
 security = "python scripts/security.py"
 
 [tool.poetry.dependencies]

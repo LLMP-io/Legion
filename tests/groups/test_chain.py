@@ -7,8 +7,8 @@ import pytest
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
+from legion import agent
 from legion.agents.base import Agent
-from legion.agents.decorators import agent
 from legion.errors import LegionError
 from legion.groups.chain import Chain
 from legion.interface.schemas import Message, ModelResponse, Role, SystemPrompt

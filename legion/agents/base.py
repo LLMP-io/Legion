@@ -426,12 +426,14 @@ class Agent:
             'openai:gpt-4o-mini' -> ('openai', 'gpt-4o-mini')
             'anthropic:claude-3-opus' -> ('anthropic', 'claude-3-opus')
             'groq:mixtral-8x7b' -> ('groq', 'mixtral-8x7b')
+            'ollama:codellama:70b' -> ('ollama', 'codellama:70b')
 
         """
         if ":" not in model_str:
             # Default to OpenAI if no provider specified
             return "openai", model_str
 
+        # Split only on the first colon to handle models with colons in their names
         provider, model = model_str.split(":", 1)
         return provider.lower(), model
 
