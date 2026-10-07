@@ -1,0 +1,5 @@
+# Install from the repository root; keep MCP optional for other examples.
+-e .
+mcp==1.9.4
+# Legion imports rich, but does not currently declare it in pyproject.toml.
+rich>=13,<16

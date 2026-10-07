@@ -310,6 +310,7 @@ The `examples` directory contains several examples that demonstrate how to use L
 *   `examples/teams/basic_team.py`: Demonstrates how to create a team of agents.
 *   `examples/tools/basic_tools.py`: Shows how to create and use tools with an agent.
 *   `examples/tools/injected_tools.py`: Demonstrates parameter injection with tools.
+*   [Parallel Search MCP](examples/tools/parallel_search.md): Optional, keyless web search and fetch tools, with a runnable example.
 
 ## Setting Up the Development Environment
 
